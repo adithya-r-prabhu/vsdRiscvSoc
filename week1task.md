@@ -267,6 +267,105 @@ The disassembled file `hello.dump` provides a detailed breakdown of the instruct
 
 ---
 
+## **Task 5: ABI & Register Cheat-Sheet**
+
+### 🎯 Objective
+Understand the 32 RV32 integer registers, their ABI names, and their roles in the RISC-V calling convention.
+
+---
+
+### Register Overview
+
+| Register | ABI Name | Role                  |
+|----------|----------|-----------------------|
+| x0       | zero     | Hardwired zero        |
+| x1       | ra       | Return address        |
+| x2       | sp       | Stack pointer         |
+| x3       | gp       | Global pointer        |
+| x4       | tp       | Thread pointer        |
+| x5-x7    | t0-t2    | Temporaries           |
+| x8-x9    | s0-s1    | Callee-saved registers|
+| x10-x17  | a0-a7    | Function arguments    |
+| x18-x27  | s2-s11   | Callee-saved registers|
+| x28-x31  | t3-t6    | Temporaries           |
+
+---
+
+### Calling Convention Summary
+
+1. **Argument Passing**:
+   - Registers `a0-a7` are used to pass up to 8 arguments to a function.
+   - If more than 8 arguments are needed, the remaining arguments are passed on the stack.
+
+2. **Return Values**:
+   - Registers `a0` and `a1` are used to return up to 2 values from a function.
+
+3. **Callee-Saved Registers**:
+   - Registers `s0-s11` must be preserved by the callee. If a function modifies these registers, it must restore their original values before returning.
+
+4. **Caller-Saved Registers**:
+   - Registers `t0-t6` and `a0-a7` are not preserved by the callee. If a caller needs their values after a function call, it must save them before the call.
+
+---
+
+### Why This Matters
+Understanding the ABI and register roles is crucial for:
+- Writing efficient assembly code.
+- Debugging low-level programs.
+- Interfacing with RISC-V functions and libraries.
+
+---
+
+## **Task 6: Stepping with GDB**
+
+### 🎯 Objective
+Learn how to use `riscv32-unknown-elf-gdb` to debug the ELF file, set breakpoints, step through the program, and inspect registers.
+
+---
+
+### My Steps
+
+1. **Starting GDB**
+   I launched the RISC-V GDB debugger with the compiled ELF file:
+   ```bash
+   riscv32-unknown-elf-gdb hello.elf
+   ```
+
+2. **Setting Up the Debugging Environment**
+   Inside GDB, I configured the target simulator and set a breakpoint at the `main` function:
+   ```bash
+   (gdb) target sim
+   (gdb) break main
+   ```
+
+3. **Running the Program**
+   I started the program execution:
+   ```bash
+   (gdb) run
+   ```
+
+4. **Inspecting Registers**
+   After hitting the breakpoint, I inspected the value of register `a0`:
+   ```bash
+   (gdb) info reg a0
+   ```
+
+5. **Disassembling Instructions**
+   To analyze the instructions at the current program counter, I used:
+   ```bash
+   (gdb) disassemble
+   ```
+
+---
+
+### Why This Matters
+Using GDB allows for detailed debugging of RISC-V programs, enabling:
+- Step-by-step execution to understand program flow.
+- Inspection of register values to debug low-level issues.
+- Analysis of disassembled instructions for deeper insights into program behavior.
+
+---
+
 ## Summary of Week 1 Progress
 
 During Week 1, we successfully set up the RISC-V toolchain, compiled and ran a "Hello, RISC-V" program, and explored the generated assembly and ELF file. Key highlights include:
@@ -277,3 +376,5 @@ During Week 1, we successfully set up the RISC-V toolchain, compiled and ran a "
 4. **Hex Dump & Disassembly**: Created a hex dump and disassembled the ELF file to inspect its structure and instructions.
 
 This week provided a strong foundation in RISC-V toolchain usage and low-level program analysis.
+
+

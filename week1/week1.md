@@ -1,15 +1,17 @@
-<p align="center">
+﻿<p align="center">
   <img src="https://img.shields.io/badge/build-passing-brightgreen?style=for-the-badge"/>
   <img src="https://img.shields.io/badge/license-MIT-blue?style=for-the-badge"/>
   <img src="https://img.shields.io/badge/language-C-blue?style=for-the-badge"/>
   <img src="https://img.shields.io/badge/coverage-100%25-brightgreen?style=for-the-badge"/>
 </p>
 
-# 🚀 RISC-V Bare-Metal Labs: Comprehensive Guide
+# 🚀 RISC-V Bare-Metal Labs: The Ultimate Hands-On Guide
 
-> **A hands-on, deep-dive journey through RISC-V embedded programming.**  
-> This repository covers everything from toolchain setup and C/assembly cross-compilation to linker scripts, hardware interfacing, atomic operations, and much more.  
-> With detailed explanations, canonical code samples, command walkthroughs, output screenshots, and practical troubleshooting, this is your one-stop resource for RISC-V bare-metal development.
+> **Level up your embedded systems journey!**  
+> This repository is a comprehensive playground for RISC-V bare-metal development: from toolchain bootstrapping, cross-compiling, and debugging, to linker scripts, atomic operations, startup code, and advanced hardware interfacing.  
+> Whether you’re a student, educator, hobbyist, or pro, this guide provides not just commands—but deep explanations, real output, troubleshooting, and practical context.
+>
+> _Each task includes output images, canonical code, and clear explanations. This is a living document: PRs and issues welcome!_
 
 ---
 
@@ -57,9 +59,10 @@ Extract it to your home directory or a directory of your choice:
 tar -xzf riscv-toolchain-rv32imac-x86_64-ubuntu.tar.gz
 ```
 
-- **What’s happening?**  
-  This decompresses and unpacks the toolchain archive.  
-  You should now see a new directory, often named `riscv-toolchain` or similar.
+This decompresses and unpacks the toolchain archive. You should now see a new directory, often named `riscv-toolchain` or similar.
+
+> 💡 **Pro Tip:**  
+> If you're unsure where the folder landed, try `ls` after extraction, or use `tar -tzf riscv-toolchain-rv32imac-x86_64-ubuntu.tar.gz | head` to preview the folder structure.
 
 ---
 
@@ -81,12 +84,12 @@ echo 'export PATH=$HOME/riscv-toolchain/bin:$PATH' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-- **Explanation:**  
-  - `export PATH=...` appends the toolchain’s binary directory to your PATH.
-  - Updating your shell config (`~/.bashrc` or `~/.zshrc`) ensures it persists on future terminal sessions.
-  - `source ...` reloads the config immediately.
+**Explanation:**  
+- `export PATH=...` appends the toolchain’s binary directory to your PATH.
+- Updating your shell config (`~/.bashrc` or `~/.zshrc`) ensures it persists on future terminal sessions.
+- `source ...` reloads the config immediately.
 
-> :warning: **Tip:** If your extracted directory is named differently, adjust the path accordingly.
+> :warning: **Tip:** If your extracted directory is named differently, adjust the path accordingly (e.g., replace `riscv-toolchain` with the actual folder).
 
 ---
 
@@ -100,8 +103,10 @@ riscv32-unknown-elf-objdump --version
 riscv32-unknown-elf-gdb --version
 ```
 
-- **What should happen?**  
-  Each command should print version info, not a “command not found” error.
+**Expectation:**  
+Each command should print version info, not a “command not found” error.  
+If you see the expected toolchain version and copyright lines,
+**your RISC-V toolchain is ready!**
 
 ---
 
@@ -109,6 +114,7 @@ riscv32-unknown-elf-gdb --version
 
 - If a command is not recognized, double-check your `PATH` and the toolchain directory name.
 - If you see permission errors, ensure you have access rights to the extracted folder.
+- If you use a login shell, you may need to log out/in or open a new terminal for the PATH change to take effect.
 
 ---
 
@@ -120,13 +126,18 @@ riscv32-unknown-elf-gdb --version
 
 ### 🧠 What We Learned
 
-- How to extract tarballs.
-- How to make new toolchain binaries available in your shell environment.
-- How to verify the installation of cross-compilers and debugging tools.
+- **How to extract tarballs:**  
+  A universal skill for all Linux users.
+- **How to update the PATH:**  
+  Crucial for using any installed toolchain or utility.
+- **How to verify installation:**  
+  Always run the compiler/debugger with `--version` as a first test.
+- **Troubleshooting tips:**  
+  Environment misconfiguration is the #1 issue for new toolchain users.
 
 ---
 
-## Task 2: Compile "Hello, RISC-V" 💡
+# Task 2: Compile "Hello, RISC-V" 💡
 > [build] [debug]
 
 ## 🎯 Objective
@@ -154,7 +165,7 @@ riscv32-unknown-elf-gcc -march=rv32imc -mabi=ilp32 -o hello.elf hello.c
 file hello.elf
 ```
 
-- `-march=rv32imc`: Target 32-bit RISC-V with IMC extensions.
+- `-march=rv32imc`: Target 32-bit RISC-V with IMC extensions (integer, multiply/divide, compressed).
 - `-mabi=ilp32`: Use the 32-bit integer ABI.
 - `-o hello.elf`: Output file is ELF for RISC-V.
 
@@ -163,7 +174,11 @@ file hello.elf
 ## 💡 Explanation
 
 - **The toolchain produces an ELF binary** that can run on real RISC-V hardware or an emulator.
-- The `file hello.elf` command confirms the binary's architecture.
+- The `file hello.elf` command confirms the binary's architecture:  
+  _"hello.elf: ELF 32-bit LSB executable, RISC-V, ..."_
+
+> **Why specify `-march=rv32imc -mabi=ilp32`?**  
+> This ensures the code is compatible with the specific instruction set and ABI your toolchain targets, which is very important for bare-metal systems.
 
 ---
 
@@ -174,6 +189,7 @@ file hello.elf
   ```sh
   riscv32-unknown-elf-gcc -o hello.elf hello.c
   ```
+- If `file hello.elf` does not mention RISC-V, double-check your compilation flags and toolchain.
 
 ---
 
@@ -184,14 +200,16 @@ file hello.elf
 
 ---
 
-## 🧠 What We Learned
+### 🧠 What We Learned
 
 - How to cross-compile C code for a specific RISC-V architecture.
 - How to check the resulting ELF binary for correct target attributes.
+- Importance of matching ABI and ISA for toolchain and hardware compatibility.
+- How to diagnose and fix common multilib/toolchain errors.
 
 ---
 
-## Task 3: From C to Assembly 📜
+# Task 3: From C to Assembly 📜
 > [concept] [debug]
 
 ## 🎯 Objective
@@ -233,6 +251,7 @@ jr      ra               # Return to caller
 
 - The **prologue** saves the state (return address, frame pointer) and creates a stack frame for local storage.
 - The **epilogue** restores registers and cleans up the stack, ensuring the function returns safely.
+- This convention allows local variables, nested function calls, and recursion to work safely in C.
 
 ---
 
@@ -243,14 +262,15 @@ jr      ra               # Return to caller
 
 ---
 
-## 🧠 What We Learned
+### 🧠 What We Learned
 
 - How to generate readable assembly from C.
 - The significance of function prologues/epilogues for safe function call/return on RISC-V.
+- Stack discipline is essential for safe code and for debugging with GDB or other tools.
 
 ---
 
-## Task 4: Hex Dump & Disassembly 🔬
+# Task 4: Hex Dump & Disassembly 🔬
 > [debug] [concept]
 
 ## 🎯 Objective
@@ -289,7 +309,7 @@ Example disassembly line:
 | Mnemonic      | Human-readable instruction (`addi`, `call`…)    |
 | Operands      | Registers, immediates, or labels used           |
 
-- **Intel HEX**: A text format encoding memory contents as hex records.
+- **Intel HEX**: A text format encoding memory contents as hex records, used for flashing microcontrollers or for inspection.
 
 ---
 
@@ -299,15 +319,16 @@ Example disassembly line:
 
 ---
 
-## 🧠 What We Learned
+### 🧠 What We Learned
 
 - How to inspect the exact machine code of your program.
 - How to produce a format suitable for embedded flashing.
 - How to map assembly mnemonics, binary opcodes, and addresses.
+- Disassembly is vital for debugging, reverse engineering, and for learning RISC-V assembly.
 
 ---
 
-## Task 5: ABI & Register Cheat-Sheet 🧑‍💻
+# Task 5: ABI & Register Cheat-Sheet 🧑‍💻
 > [reference] [concept]
 
 ## 🎯 Objective
@@ -359,16 +380,22 @@ Gain full command of the RISC-V integer register set, ABI naming, and calling co
 
 - **Caller-saved (`tX`, `aX`):** Must be saved/restored by the calling function if needed after a call.
 - **Callee-saved (`sX`):** Must be preserved by the called function.
+- **zero**: Always reads as zero.
+- **ra**: Used for returning from functions.
+- **sp**: Always points to the stack.
+- **gp/tp**: Used for global/thread-local data.
 
 ---
 
 ### ✅ What We Learned
 
 - The full register file and RISC-V calling conventions for writing/porting assembly and understanding C ABI at the binary level.
+- For efficient hand-written assembly, always preserve ABI conventions!
+- Debugging stack traces and register dumps is easier knowing these conventions.
 
 ---
 
-## Task 6: Stepping with GDB 🐞
+# Task 6: Stepping with GDB 🐞
 > [debug]
 
 ## 🎯 Objective
@@ -401,16 +428,18 @@ riscv32-unknown-elf-gdb hello.elf
 
 - **Simulation**: GDB’s internal simulator lets you debug even without QEMU/Spike.
 - **Register Inspection**: Essential for verifying argument passing, function returns, pointer correctness, etc.
+- **Breakpoint + Run**: Stops execution at main(), ideal for program introspection.
 
 ---
 
 ### 🧠 What We Learned
 
 - GDB is a powerful tool for step-by-step execution, state inspection, and debugging at the instruction level.
+- You can debug even before you have hardware or a full system image.
 
 ---
 
-## Task 7: Running Under an Emulator 👾
+# Task 7: Running Under an Emulator 👾
 > [hardware] [debug]
 
 ## 🎯 Objective
@@ -443,16 +472,18 @@ qemu-system-riscv32 -nographic -kernel hello.elf
 ### 💡 Explanation
 
 - **UART Output**: Confirms printf() and standard output work in your ELF, even in a simulated environment.
+- **pk (Proxy Kernel)**: Required for user-mode programs on Spike; provides minimal I/O and syscall handling.
 
 ---
 
 ### 🧠 What We Learned
 
 - Emulators simulate real hardware, allowing for development and debugging before hardware is available.
+- Output visibility is critical for embedded debugging—UART is the de facto embedded debug channel.
 
 ---
 
-## Task 8: Exploring GCC Optimization 🚀
+# Task 8: Exploring GCC Optimization 🚀
 > [optimization] [concept]
 
 ## 🎯 Objective
@@ -489,11 +520,12 @@ diff file.s file-O2.s
   - Every line of C code is represented.
   - All variables are stored on the stack.
   - Even dead code (like `y = a * b;` if unused) is emitted.
-
+  - Function prologues/epilogues are bulkier for debug.
 - **-O2 (Optimized):**
   - Dead code elimination: `y` is removed if not used.
   - Variables are kept in registers instead of the stack.
   - Code is smaller and faster; function is often reduced to just the return value computation.
+  - Function may even be inlined, or reduced to a single instruction.
 
 ---
 
@@ -508,10 +540,11 @@ diff file.s file-O2.s
 
 - Compiler optimization removes unnecessary computation and memory accesses.
 - Disassembly comparison is a great way to learn what the optimizer does.
+- For debugging use `-O0`, for final firmware use `-O2` or higher.
 
 ---
 
-## Task 9: Inline Assembly Basics ⏱️
+# Task 9: Inline Assembly Basics ⏱️
 > [concept] [optimization]
 
 ## 🎯 Objective
@@ -537,16 +570,18 @@ static inline uint32_t rdcycle(void) {
 - `"csrr %0, cycle"`: Reads the cycle CSR into a register.
 - `: "=r"(c)`: Output operand constraint—assigns the result to any general register, mapped to `c`.
 - `volatile`: Prevents the compiler from reordering or omitting the instruction.
+- Useful for benchmarking code and for profiling on real hardware.
 
 ---
 
 ### 🧠 What We Learned
 
 - Inline assembly is essential for performance measurement, accessing special registers, and hardware features unavailable in C.
+- Correct use of GCC constraints ensures portable, safe inlining of assembly code.
 
 ---
 
-## Task 10: Memory-Mapped I/O Demo ⚡
+# Task 10: Memory-Mapped I/O Demo ⚡
 > [hardware] [implementation]
 
 ## 🎯 Objective
@@ -593,10 +628,11 @@ qemu-system-riscv64 -M virt -nographic -kernel toggle_gpio.elf
 
 - Memory-mapped I/O is the standard mechanism for embedded device control.
 - `volatile` is critical to prevent compiler optimization for hardware access.
+- Direct memory access enables bare-metal programs to perform real-world I/O.
 
 ---
 
-## Task 11: Linker Script 101 🔗
+# Task 11: Linker Script 101 🔗
 > [build] [concept]
 
 ## 🎯 Objective
@@ -623,6 +659,7 @@ SECTIONS {
 - `. = 0x00000000;` sets the current address for `.text`.
 - Then, `. = 0x10000000;` moves the address for `.data`.
 - This matches common embedded memory layouts: code in flash, data in RAM.
+- Without a custom linker script, your code/data may not match your hardware’s memory map, resulting in runtime errors.
 
 ---
 
@@ -638,10 +675,11 @@ SECTIONS {
 
 - Precise memory layout is critical for bare-metal embedded systems.
 - Custom linker scripts are the tool for enforcing this.
+- Understanding memory regions is a foundation for all embedded work.
 
 ---
 
-## Task 12: Start-up Code & crt0 🏁
+# Task 12: Start-up Code & crt0 🏁
 > [startup] [concept]
 
 ## 🎯 Objective
@@ -661,16 +699,18 @@ What does `crt0.S` do in a bare-metal RISC-V program, and where can you get one?
   - **Infinite loop after `main`** to prevent fallthrough.
 - **Where to get one?**
   - Board SDKs, newlib, or open-source device templates.
+  - You can often copy and adapt existing crt0.S from reference projects, adjusting only the memory regions and vector table as needed.
 
 ---
 
 ### 🧠 What We Learned
 
 - Startup assembly is needed for all embedded programs to set up the runtime before C code runs.
+- Common bugs (stack overflows, uninitialized variables) can be traced to incorrect or missing crt0 code.
 
 ---
 
-## Task 13: Interrupt Primer ⏰
+# Task 13: Interrupt Primer ⏰
 > [hardware] [implementation]
 
 ## 🎯 Objective
@@ -684,6 +724,7 @@ Enable the machine-timer interrupt (MTIP) and write a simple handler in C/assemb
 - **Write to `mtimecmp`**: Set timer compare register for next interrupt.
 - **Enable `mie` and `mstatus`**: Bitmask to enable timer interrupts.
 - **ISR**: Define with `__attribute__((interrupt))` or with a naked/assembly wrapper.
+- **Service the interrupt**: Schedule the next event, update your state, and return correctly to main.
 
 ---
 
@@ -692,6 +733,7 @@ Enable the machine-timer interrupt (MTIP) and write a simple handler in C/assemb
 - Timer interrupts are scheduled by programming the `mtimecmp` register.
 - The machine interrupt enable (`mie`) and the global interrupt enable in machine status (`mstatus`) must be set.
 - The handler must acknowledge/clear and schedule the next interrupt.
+- Use of CSRs (`csrrw`, `csrs`, etc.) is essential.
 
 ---
 
@@ -705,10 +747,11 @@ Enable the machine-timer interrupt (MTIP) and write a simple handler in C/assemb
 ### 🧠 What We Learned
 
 - RISC-V interrupts are fully software-controlled and require explicit CSR and memory-mapped register configuration.
+- Writing ISRs in C requires understanding of calling conventions, stack usage, and special attributes.
 
 ---
 
-## Task 14: rv32imac vs rv32imc – The “A” 🧩
+# Task 14: rv32imac vs rv32imc – The “A” 🧩
 > [concept] [reference]
 
 ## 🎯 Objective
@@ -726,10 +769,11 @@ Explain the significance of the “A” (atomic) extension in rv32imac.
   - Lock-free data structures
   - OS kernel synchronization
   - Multicore safe communication
+- Without the A-extension, you must use software (interrupt disabling, etc.) for atomicity—much slower and less robust.
 
 ---
 
-## Task 15: Atomic Test Program (Spinlock) 🌀
+# Task 15: Atomic Test Program (Spinlock) 🌀
 > [implementation] [debug]
 
 ## 🎯 Objective
@@ -751,7 +795,12 @@ void acquire_lock(volatile int *lock) {
         }
     } while (result);
 }
+void release_lock(volatile int *lock) {
+    *lock = 0;
+}
 ```
+
+- This implements a mutual exclusion primitive for pseudo-threads or real preemptive multitasking.
 
 ---
 
@@ -768,10 +817,11 @@ void acquire_lock(volatile int *lock) {
 ### 💡 Explanation
 
 - The `lr.w`/`sc.w` pair implements hardware-atomic lock acquire/release, the foundation for safe multitasking and concurrency.
+- If the store-conditional fails, another thread/core changed the value, and we retry.
 
 ---
 
-## Task 16: Newlib printf Without an OS 📢
+# Task 16: Newlib printf Without an OS 📢
 > [hardware] [implementation]
 
 ## 🎯 Objective
@@ -799,10 +849,11 @@ ssize_t _write(int fd, const void *buf, size_t count) {
 
 - Newlib’s `printf` uses `_write` for output.
 - By providing your own `_write`, you make `printf` work on raw hardware (UART).
+- This is essential for debugging and for human-readable logs in embedded systems.
 
 ---
 
-## Task 17: Endianness & Struct Packing 🧩
+# Task 17: Endianness & Struct Packing 🧩
 > [concept] [debug]
 
 ## 🎯 Objective
@@ -848,6 +899,7 @@ int main() {
 
 - Assigning `0x01020304` to a `uint32_t` and examining the bytes in a `uint8_t[]` union member reveals byte order.
 - On little-endian, output will be `04 03 02 01`—the least significant byte is stored first.
+- This is a classic C trick for platform detection and is portable to any CPU.
 
 ---
 
